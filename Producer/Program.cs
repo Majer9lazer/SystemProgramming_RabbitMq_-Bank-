@@ -56,6 +56,8 @@ namespace Producer
                 xdoc.Save(DbFile);
             }
 
+
+
             private int GetMaxUserId()
             {
                 XDocument xdoc = XDocument.Load(DbFile);
