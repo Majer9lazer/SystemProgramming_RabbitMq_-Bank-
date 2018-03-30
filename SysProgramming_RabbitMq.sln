@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Consumer\Consum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Producer", "Producer\Producer.csproj", "{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{408F85B4-F4A9-4EF9-8679-0FB163BC9D0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{4A787B27-4537-453E-B2E5-95209EF49526}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +31,15 @@ Global
 		{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A787B27-4537-453E-B2E5-95209EF49526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A787B27-4537-453E-B2E5-95209EF49526}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A787B27-4537-453E-B2E5-95209EF49526}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A787B27-4537-453E-B2E5-95209EF49526}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4A787B27-4537-453E-B2E5-95209EF49526} = {408F85B4-F4A9-4EF9-8679-0FB163BC9D0A}
 	EndGlobalSection
 EndGlobal

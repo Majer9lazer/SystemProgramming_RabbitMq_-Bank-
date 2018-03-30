@@ -1,0 +1,30 @@
+﻿<Window x:Class="UserInterface.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UserInterface"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+       <TabControl>
+            <TabItem Header="Registrate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Content="Fill in all fields!" BorderBrush="Black" BorderThickness="1" x:Name="InformationLabel"></Label>
+                    <StackPanel Grid.Row="1" Orientation="Vertical">
+                        <TextBox x:Name="UserNameTextBox" Text="Your Name Here" Height="19" Margin="3" GotFocus="UserNameTextBox_OnGotFocus"></TextBox>
+                        <TextBox x:Name="UserAgeTextBox" Text="Your Age Here" Margin="3"  GotFocus="UserAgeTextBox_GotFocus"></TextBox>
+                        <TextBox x:Name="UserMailTextBox" Text="Your Mail Here" Margin="3"  GotFocus="UserMailTextBox_GotFocus"></TextBox>
+                        <TextBox x:Name="UserNumberTextBox" Text="Your Number Here" Margin="3"  GotFocus="UserNumberTextBox_GotFocus"></TextBox>
+                    <Button x:Name="RegistrateButton" Click="RegistrateButton_OnClick" Content="Register" HorizontalAlignment="Right" Width="60" Margin="0,3,15,0"></Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+       </TabControl>
+    </Grid>
+</Window>
