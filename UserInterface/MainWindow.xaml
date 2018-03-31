@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-       <TabControl>
+        <TabControl>
             <TabItem Header="Registrate">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -21,10 +21,57 @@
                         <TextBox x:Name="UserAgeTextBox" Text="Your Age Here" Margin="3"  GotFocus="UserAgeTextBox_GotFocus"></TextBox>
                         <TextBox x:Name="UserMailTextBox" Text="Your Mail Here" Margin="3"  GotFocus="UserMailTextBox_GotFocus"></TextBox>
                         <TextBox x:Name="UserNumberTextBox" Text="Your Number Here" Margin="3"  GotFocus="UserNumberTextBox_GotFocus"></TextBox>
-                    <Button x:Name="RegistrateButton" Click="RegistrateButton_OnClick" Content="Register" HorizontalAlignment="Right" Width="60" Margin="0,3,15,0"></Button>
+                        <Button x:Name="RegistrateButton" Click="RegistrateButton_OnClick" Content="Register" HorizontalAlignment="Right" Width="60" Margin="0,3,15,0"></Button>
                     </StackPanel>
+                    <TextBlock Grid.Row="2" x:Name="ErrorOrSuccessTextBlock" Margin="3" Background="AliceBlue"></TextBlock>
                 </Grid>
             </TabItem>
-       </TabControl>
+            <TabItem Header="Log in">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="415"/>
+                        <ColumnDefinition Width="0"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="180*"/>
+                        <RowDefinition Height="60"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Background="AliceBlue">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock TextWrapping="Wrap" Margin="3" Grid.Column="0" Grid.Row="0" Text="Your Mail or Guid"></TextBlock>
+                                    <TextBox Grid.Column="1" Grid.Row="0" Margin="3" Text="sidorenkoegor1999" x:Name="UserLoginOrGuidTextBox"></TextBox>
+                                    <Button Grid.Row="1" Grid.Column="1" Content="Login" Margin="3" Click="ButtonBase_OnClick"></Button>
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <ListBox x:Name="ProcessInformationList" Grid.Column="1"></ListBox>
+                                    <ListBox x:Name="UserInformationList" Grid.Column="0"></ListBox>
+                                </Grid>
+                              
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

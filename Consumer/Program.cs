@@ -1,17 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Producer;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using UserInterface;
 
 namespace Consumer
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-
-            Console.ReadLine();
+            try
+            {
+                Console.WriteLine("Error");
+                GetSmsFromRabbitMq a = new GetSmsFromRabbitMq();
+             
+                a.RunWorkerProcessForSmss("Error");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                Console.ReadLine();
+            }
         }
+
+       
+
+      
     }
 }
