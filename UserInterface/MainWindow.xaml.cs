@@ -10,11 +10,12 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using Newtonsoft.Json;
-using Producer;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using UserInterface.WorkWithUsers;
 
 
 namespace UserInterface
@@ -24,7 +25,13 @@ namespace UserInterface
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Program.Db _dataBase = new Program.Db(Program.DocName + Program.DocExtension);
+        private static readonly string PathToDataBase = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName +
+            @"\LocalXmlDatabase.xml";
+
+        private Db _dataBase = new Db(PathToDataBase);
+
+        public static readonly string PathToErrorLog = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName +
+            @"\ErrorLog.txt";
 
         private void SendMailToUser(string userMail, string messageGuid, ref User u)
         {
@@ -54,7 +61,7 @@ namespace UserInterface
                 MailMessage mess = new MailMessage(from, to, subject, body);
 
                 //создаем подключение
-                SmtpClient client = new SmtpClient(smtpHost,smtpPort);
+                SmtpClient client = new SmtpClient(smtpHost, smtpPort);
                 client.Credentials = new NetworkCredential(login, pass);
                 client.EnableSsl = true;
                 client.Send(new MailMessage(from, to, subject, body));
@@ -73,16 +80,16 @@ namespace UserInterface
         {
             TextBoxMessages = new Dictionary<string, string>()
             {
-                { "UserNameTextBox","Your Name Here"},
-                { "UserAgeTextBox","Your Age Here"},
-                {"UserMailTextBox","Your Mail Here"},
-                {"UserNumberTextBox","Your Number Here"}
+                {"UserNameTextBox", "Your Name Here"},
+                {"UserAgeTextBox", "Your Age Here"},
+                {"UserMailTextBox", "Your Mail Here"},
+                {"UserNumberTextBox", "Your Number Here"}
             };
 
             //Process.Start("Consumer.exe","Error");
-            if (File.Exists(@"C:\Users\user\Source\Repos\SystemProgramming_RabbitMq_-Bank-\Consumer\bin\Debug\ErrorLog.txt"))
+            if (File.Exists(PathToErrorLog))
             {
-                File.Delete(@"C:\Users\user\Source\Repos\SystemProgramming_RabbitMq_-Bank-\Consumer\bin\Debug\ErrorLog.txt");
+                File.Delete(PathToErrorLog);
             }
 
             InitializeComponent();
@@ -91,6 +98,7 @@ namespace UserInterface
 
 
         public Dictionary<string, string> TextBoxMessages;
+
         private void UserNameTextBox_OnGotFocus(object sender, RoutedEventArgs e)
         {
 
@@ -147,6 +155,7 @@ namespace UserInterface
         }
 
         private RabbitMqMiddlewareBusService _busService = new RabbitMqMiddlewareBusService();
+
         private void RegistrateButton_OnClick(object sender, RoutedEventArgs e)
         {
             TextBox[] arrTextBoxs = { UserNameTextBox, UserAgeTextBox, UserMailTextBox, UserNumberTextBox };
@@ -173,15 +182,20 @@ namespace UserInterface
                     int.TryParse(UserAgeTextBox.Text, out defage);
                     u.Age = defage;
                     u.Status = UserStatus.Error.ToString();
-                    u.UserId = Program.Db.GetMaxId(AppDomain.CurrentDomain.BaseDirectory + Program.DocName + Program.DocExtension) + 1;
+                    u.UserId = Db.GetMaxId(PathToDataBase) + 1;
                     u.UserMail = UserMailTextBox.Text;
                     u.UserGuid = newGuid;
                     u.UserNumber = UserNumberTextBox.Text;
                     u.UserName = UserNameTextBox.Text;
 
 
-                    _busService.PublishMessage((new ErrorMessage() { MessageBody = "Проблемы с тем что у вас тупо нет собачки) аахахаха, заведите собачку)", UserInfo = u }), "Error");
-                    _dataBase.Add(u,u.Status);
+                    _busService.PublishMessage(
+                        (new ErrorMessage()
+                        {
+                            MessageBody = "Проблемы с тем что у вас тупо нет собачки) аахахаха, заведите собачку)",
+                            UserInfo = u
+                        }), "Error");
+                    _dataBase.Add(u, u.Status);
                 }
                 else
                 {
@@ -190,12 +204,17 @@ namespace UserInterface
                         int.TryParse(UserAgeTextBox.Text, out defage);
                         u.Age = defage;
                         u.Status = UserStatus.Error.ToString();
-                        u.UserId = Program.Db.GetMaxId(AppDomain.CurrentDomain.BaseDirectory + Program.DocName + Program.DocExtension) + 1;
+                        u.UserId = Db.GetMaxId(PathToDataBase) + 1;
                         u.UserMail = UserMailTextBox.Text;
                         u.UserGuid = newGuid;
                         u.UserNumber = UserNumberTextBox.Text;
                         u.UserName = UserNameTextBox.Text;
-                        _busService.PublishMessage((new ErrorMessage() { MessageBody = "Проблемы с тем что у вас неправильный номер)", UserInfo = u }), "Error");
+                        _busService.PublishMessage(
+                            (new ErrorMessage()
+                            {
+                                MessageBody = "Проблемы с тем что у вас неправильный номер)",
+                                UserInfo = u
+                            }), "Error");
                         _dataBase.Add(u, u.Status);
                     }
                     else
@@ -203,8 +222,7 @@ namespace UserInterface
                         int.TryParse(UserAgeTextBox.Text, out defage);
                         u.Age = defage;
                         u.Status = UserStatus.OnModeration.ToString();
-                        u.UserId = Program.Db.GetMaxId(AppDomain.CurrentDomain.BaseDirectory + Program.DocName +
-                                                       Program.DocExtension);
+                        u.UserId = Db.GetMaxId(PathToDataBase);
                         u.UserMail = UserMailTextBox.Text;
                         u.UserGuid = newGuid;
                         u.UserNumber = UserNumberTextBox.Text;
@@ -214,6 +232,7 @@ namespace UserInterface
                         _dataBase.Add(u, u.Status);
                     }
                 }
+
                 MessageBox.Show("Добро мать его пожаловать! , ну почти)) ");
                 foreach (KeyValuePair<string, string> mesage in TextBoxMessages)
                 {
@@ -228,22 +247,18 @@ namespace UserInterface
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            string path = @"C:\Users\user\Source\Repos\SystemProgramming_RabbitMq_-Bank-\Consumer\bin\Debug\ErrorLog.txt";
             UserInformationList.Items.Clear();
             if (UserLoginOrGuidTextBox.Text.Contains('@'))
             {
-               
+
                 User u = _dataBase.GetUserBymailOrGuid(UserLoginOrGuidTextBox.Text, false);
-                _dataBase.UpdateUserStatus(u, UserStatus.Passed.ToString());
-                ErrorMessage err = new ErrorMessage();
-                if (File.Exists(path))
+                _dataBase.UpdateUserStatus(u, UserStatus.Passed.ToString(),false);
+                if (File.Exists(PathToErrorLog))
                 {
-                    using (StreamReader sr = new StreamReader(
-                        @"C:\Users\user\Source\Repos\SystemProgramming_RabbitMq_-Bank-\Consumer\bin\Debug\ErrorLog.txt")
-                    )
+                    using (StreamReader sr = new StreamReader(PathToErrorLog))
                     {
                         string text = sr.ReadLine();
-                        err = (ErrorMessage) JsonConvert.DeserializeObject(text);
+                        var err = (ErrorMessage)JsonConvert.DeserializeObject(text);
                         if (err != null)
                         {
                             ProcessInformationList.Items.Add(err.MessageBody);
@@ -251,14 +266,13 @@ namespace UserInterface
                     }
                 }
 
-                UserInformationList.Items.Add($"Your Name - {u.UserName}");
-                UserInformationList.Items.Add($"Your Mail - {u.UserMail}");
-                UserInformationList.Items.Add($"Your Guid - {u.UserGuid}");
-                UserInformationList.Items.Add($"Your Age - {u.Age}");
-                UserInformationList.Items.Add($"Your Number - {(u.UserNumber)}");
-                UserInformationList.Items.Add($"Your Id - {u.UserId}");
-               
-                UserInformationList.Items.Add($"Your Login Status - {u.Status}");
+                UserInformationList.Items.Add($"Name - {u.UserName}");
+                UserInformationList.Items.Add($"Mail - {u.UserMail}");
+                UserInformationList.Items.Add($"Guid - {u.UserGuid}");
+                UserInformationList.Items.Add($"Age - {u.Age}");
+                UserInformationList.Items.Add($"Number - {(u.UserNumber)}");
+                UserInformationList.Items.Add($"Id - {u.UserId}");
+                UserInformationList.Items.Add($"Login Status - {u.Status}");
                 if (u.Status == UserStatus.Passed.ToString())
                 {
                     MessageBox.Show("OMG You are valid person");
@@ -266,33 +280,34 @@ namespace UserInterface
             }
             else
             {
-                string message = "";
+
                 string userLoginOrGuid = UserLoginOrGuidTextBox.Text;
-                string errmesaEmpty = "";
-               
-                if (File.Exists(path))
+
+                if (File.Exists(PathToErrorLog))
                 {
-                    using (StreamReader sr = new StreamReader(path))
+                    string errmesaEmpty;
+                    using (StreamReader sr = new StreamReader(PathToErrorLog))
                     {
                         errmesaEmpty = sr.ReadToEnd();
                     }
+
                     ErrorMessage error = JsonConvert.DeserializeObject<ErrorMessage>(errmesaEmpty);
                     ProcessInformationList.Items.Add(error.MessageBody);
-                    File.Delete(path);
+                    File.Delete(PathToErrorLog);
                 }
 
-               
-               
+
+
                 if (userLoginOrGuid.Length == Guid.NewGuid().ToString().Length)
                 {
                     User u = _dataBase.GetUserBymailOrGuid(userLoginOrGuid, true);
-                    UserInformationList.Items.Add($"Your Name - {u.UserName}");
-                    UserInformationList.Items.Add($"Your Mail - {u.UserMail}");
-                    UserInformationList.Items.Add($"Your Guid - {u.UserGuid}");
-                    UserInformationList.Items.Add($"Your Age - {u.Age}");
-                    UserInformationList.Items.Add($"Your Number - {(u.UserNumber)}");
-                    UserInformationList.Items.Add($"Your Id - {u.UserId}");
-                    UserInformationList.Items.Add($"Your Login Status - {u.Status}");
+                    UserInformationList.Items.Add($"Name - {u.UserName}");
+                    UserInformationList.Items.Add($"Mail - {u.UserMail}");
+                    UserInformationList.Items.Add($"Guid - {u.UserGuid}");
+                    UserInformationList.Items.Add($"Age - {u.Age}");
+                    UserInformationList.Items.Add($"Number - {(u.UserNumber)}");
+                    UserInformationList.Items.Add($"Id - {u.UserId}");
+                    UserInformationList.Items.Add($"Login Status - {u.Status}");
                 }
                 else
                 {
@@ -302,16 +317,78 @@ namespace UserInterface
                         MessageBox.Show("You Have problems , check right column");
                     }
 
-                    UserInformationList.Items.Add($"Your Name - {u.UserName}");
-                    UserInformationList.Items.Add($"Your Mail - {u.UserMail}");
-                    UserInformationList.Items.Add($"Your Guid - {u.UserGuid}");
-                    UserInformationList.Items.Add($"Your Age - {u.Age}");
-                    UserInformationList.Items.Add($"Your Number - {(u.UserNumber)}");
-                    UserInformationList.Items.Add($"Your Id - {u.UserId}");
-                    UserInformationList.Items.Add($"Your Login Status - {u.Status}");
+                    UserInformationList.Items.Add($"Name - {u.UserName}");
+                    UserInformationList.Items.Add($"Mail - {u.UserMail}");
+                    UserInformationList.Items.Add($"Guid - {u.UserGuid}");
+                    UserInformationList.Items.Add($"Age - {u.Age}");
+                    UserInformationList.Items.Add($"Number - {(u.UserNumber)}");
+                    UserInformationList.Items.Add($"Id - {u.UserId}");
+                    UserInformationList.Items.Add($"Login Status - {u.Status}");
                 }
             }
+
+            RedactWrapPanel.Visibility = Visibility.Visible;
+        }
+
+        private string[] GetDataFromUserInformationList(int index,ItemCollection lb)
+        {
+            string NameOfField = lb.GetItemAt(index).ToString();
+            NameOfField = NameOfField.Substring(0, NameOfField.IndexOf('-') - 1);
+            string value = lb.GetItemAt(index).ToString();
+            value = value.Substring(value.IndexOf('-')+1, value.Length - value.IndexOf('-') - 1).Replace(" ","");
+            return new[]{NameOfField,value};
+        }
+        private void RedactButtonClick(object sender, RoutedEventArgs e)
+        {
+
+            ItemCollection lb = UserInformationList.Items;
+          
+            
+            switch (GetDataFromUserInformationList(UserInformationList.SelectedIndex,lb)[0])
+            {
+                case "Name":
+                    {
+                        User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(0, lb)[1], false);
+                        u.Status = UserStatus.OnModeration.ToString();
+                        u.UserName = UserMailRedactTextBox.Text;
+                        _dataBase.UpdateUserStatus(u, u.Status, true);
+                        break;
+                    }
+                case "Mail":
+                    {
+                        User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(1, lb)[1], false);
+                        u.Status = UserStatus.OnModeration.ToString();
+                        u.UserMail = UserMailRedactTextBox.Text;
+                        _dataBase.UpdateUserStatus(u, u.Status, true);
+                        break;
+                    }
+                case "Age":
+                {
+                    User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(3, lb)[1], false);
+                    u.Status = UserStatus.OnModeration.ToString();
+                    int defage = 18;
+                    int.TryParse(UserMailRedactTextBox.Text, out defage);
+                    u.Age = defage;
+                    _dataBase.UpdateUserStatus(u, u.Status, true);
+                        break;
+                }
+                case "Number":
+                {
+                    User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(4, lb)[1], false);
+                    u.Status = UserStatus.OnModeration.ToString();
+                    u.UserNumber = UserMailRedactTextBox.Text;
+                    _dataBase.UpdateUserStatus(u, u.Status, true);
+                        break;
+                }
+                case "Guid":{MessageBox.Show("You can't change your guid"); break;}
+                case "Id":{ break; }
+            }
+
+            MessageBox.Show("Данные были успешно отредактированы!");
         }
     }
-
 }
+
+
+
+

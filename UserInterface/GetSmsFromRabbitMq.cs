@@ -39,7 +39,7 @@ namespace UserInterface
 
                     var messageDeserialized = JsonConvert.DeserializeObject<ErrorMessage>(message);
                     Console.WriteLine($" [x] Deserialized object {messageDeserialized.MessageBody}");
-                    using (StreamWriter sw = new StreamWriter(@"ErrorLog.txt",true))
+                    using (StreamWriter sw = new StreamWriter(MainWindow.PathToErrorLog, true))
                     {
                         sw.WriteLine(message);
                     }

@@ -67,6 +67,7 @@
     <Compile Include="ErrorMessage.cs" />
     <Compile Include="RabbitMqMiddlewareBusService.cs" />
     <Compile Include="GetSmsFromRabbitMq.cs" />
+    <Compile Include="WorkWithUsers\UsersDatabase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,12 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Producer\Producer.csproj">
-      <Project>{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}</Project>
-      <Name>Producer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

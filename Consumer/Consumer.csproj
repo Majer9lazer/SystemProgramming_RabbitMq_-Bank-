@@ -66,10 +66,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Producer\Producer.csproj">
-      <Project>{C1F9E68B-0B75-4470-B2D1-E52DAF7DDE82}</Project>
-      <Name>Producer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\UserInterface\UserInterface.csproj">
       <Project>{4A787B27-4537-453E-B2E5-95209EF49526}</Project>
       <Name>UserInterface</Name>

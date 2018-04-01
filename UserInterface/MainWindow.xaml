@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UserInterface"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="453" Width="754">
     <Grid>
         <TabControl>
             <TabItem Header="Registrate">
@@ -29,16 +29,16 @@
             <TabItem Header="Log in">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="40"/>
-                        <ColumnDefinition Width="415"/>
-                        <ColumnDefinition Width="0"/>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="670*"/>
+                        <ColumnDefinition Width="50*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="60"/>
-                        <RowDefinition Height="180*"/>
+                        <RowDefinition Height="180"/>
                         <RowDefinition Height="60"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                         <StackPanel Orientation="Vertical">
                             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Background="AliceBlue">
                                 <Grid>
@@ -65,11 +65,15 @@
                                     <ListBox x:Name="ProcessInformationList" Grid.Column="1"></ListBox>
                                     <ListBox x:Name="UserInformationList" Grid.Column="0"></ListBox>
                                 </Grid>
-                              
                             </StackPanel>
+
                         </StackPanel>
                     </Grid>
-
+                    <WrapPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" x:Name="RedactWrapPanel" Visibility="Visible">
+                        <TextBox x:Name="UserMailRedactTextBox" Text="{Binding ElementName=UserInformationList,Path=SelectedItem}" Margin="5"></TextBox>
+                       
+                    </WrapPanel>
+                    <Button Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Content="Redact" Margin="3" Click="RedactButtonClick"></Button>
                 </Grid>
             </TabItem>
         </TabControl>
