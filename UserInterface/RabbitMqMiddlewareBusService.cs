@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 
+
 namespace UserInterface
 {
     public class RabbitMqMiddlewareBusService
@@ -37,9 +38,9 @@ namespace UserInterface
         {
             _connectionFactory = new ConnectionFactory()
             {
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
+                HostName = "192.168.111.199",
+                UserName = "shag",
+                Password = "shag",
                 VirtualHost = "/"
             };
         }

@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SysProgramming_RabbitMq", "SysProgramming_RabbitMq\SysProgramming_RabbitMq.csproj", "{5847256E-B131-4AEA-B3BA-DB33FC2E7FDA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Consumer\Consumer.csproj", "{AE2077D8-FA55-413E-BBF8-ADC782AD5393}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{408F85B4-F4A9-4EF9-8679-0FB163BC9D0A}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5847256E-B131-4AEA-B3BA-DB33FC2E7FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5847256E-B131-4AEA-B3BA-DB33FC2E7FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5847256E-B131-4AEA-B3BA-DB33FC2E7FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5847256E-B131-4AEA-B3BA-DB33FC2E7FDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE2077D8-FA55-413E-BBF8-ADC782AD5393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE2077D8-FA55-413E-BBF8-ADC782AD5393}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE2077D8-FA55-413E-BBF8-ADC782AD5393}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -7,11 +7,13 @@ using System.Net;
 using System.Net.Mail;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -25,14 +27,12 @@ namespace UserInterface
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string PathToDataBase = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName +
-            @"\LocalXmlDatabase.xml";
+        private static readonly string PathToDataBase = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName + @"\LocalXmlDatabase.xml";
 
         private Db _dataBase = new Db(PathToDataBase);
 
-        public static readonly string PathToErrorLog = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName +
-            @"\ErrorLog.txt";
-
+        public static readonly string PathToErrorLog = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.FullName + @"\ErrorLog.txt";
+        private static List<ErrorMessage> _errors = new List<ErrorMessage>();
         private void SendMailToUser(string userMail, string messageGuid, ref User u)
         {
 
@@ -75,7 +75,8 @@ namespace UserInterface
             }
         }
 
-
+        private readonly RabbitMqMiddlewareBusService _busService = new RabbitMqMiddlewareBusService();
+        public Dictionary<string, string> TextBoxMessages;
         public MainWindow()
         {
             TextBoxMessages = new Dictionary<string, string>()
@@ -93,11 +94,10 @@ namespace UserInterface
             }
 
             InitializeComponent();
-
         }
 
 
-        public Dictionary<string, string> TextBoxMessages;
+
 
         private void UserNameTextBox_OnGotFocus(object sender, RoutedEventArgs e)
         {
@@ -154,7 +154,7 @@ namespace UserInterface
             }
         }
 
-        private RabbitMqMiddlewareBusService _busService = new RabbitMqMiddlewareBusService();
+
 
         private void RegistrateButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -188,13 +188,14 @@ namespace UserInterface
                     u.UserNumber = UserNumberTextBox.Text;
                     u.UserName = UserNameTextBox.Text;
 
+                    ErrorMessage errorWithDog = new ErrorMessage()
+                    {
 
-                    _busService.PublishMessage(
-                        (new ErrorMessage()
-                        {
-                            MessageBody = "Проблемы с тем что у вас тупо нет собачки) аахахаха, заведите собачку)",
-                            UserInfo = u
-                        }), "Error");
+                        MessageBody = "Проблемы с тем что у вас тупо нет собачки) аахахаха, заведите собачку)",
+                        UserInfo = u
+                    };
+
+                    _busService.PublishMessage(errorWithDog, "Error");
                     _dataBase.Add(u, u.Status);
                 }
                 else
@@ -252,16 +253,33 @@ namespace UserInterface
             {
 
                 User u = _dataBase.GetUserBymailOrGuid(UserLoginOrGuidTextBox.Text, false);
-                _dataBase.UpdateUserStatus(u, UserStatus.Passed.ToString(),false);
+                _dataBase.UpdateUserStatus(u, UserStatus.Passed.ToString(), false);
                 if (File.Exists(PathToErrorLog))
                 {
                     using (StreamReader sr = new StreamReader(PathToErrorLog))
                     {
                         string text = sr.ReadLine();
-                        var err = (ErrorMessage)JsonConvert.DeserializeObject(text);
-                        if (err != null)
+                        try
                         {
-                            ProcessInformationList.Items.Add(err.MessageBody);
+
+
+                            var err = (ErrorMessage)JsonConvert.DeserializeObject<ErrorMessage>(text);
+                            if (err != null)
+                            {
+                                if (u.UserGuid == err.UserInfo.UserGuid)
+                                {
+                                    ProcessInformationList.Items.Add(err.MessageBody);
+                                }
+                                else
+                                {
+                                    ProcessInformationList.Items.Clear();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ProcessInformationList.Items.Add(text);
+
                         }
                     }
                 }
@@ -330,61 +348,143 @@ namespace UserInterface
             RedactWrapPanel.Visibility = Visibility.Visible;
         }
 
-        private string[] GetDataFromUserInformationList(int index,ItemCollection lb)
+        private string GetSubstringOfGuid(string sourcestring, char elem)
         {
-            string NameOfField = lb.GetItemAt(index).ToString();
-            NameOfField = NameOfField.Substring(0, NameOfField.IndexOf('-') - 1);
-            string value = lb.GetItemAt(index).ToString();
-            value = value.Substring(value.IndexOf('-')+1, value.Length - value.IndexOf('-') - 1).Replace(" ","");
-            return new[]{NameOfField,value};
+            string substr = sourcestring.Substring(sourcestring.IndexOf(elem),
+                sourcestring.Length - sourcestring.IndexOf(elem)).Remove(0, 2);
+            return substr;
         }
+
         private void RedactButtonClick(object sender, RoutedEventArgs e)
         {
-
-            ItemCollection lb = UserInformationList.Items;
-          
-            
-            switch (GetDataFromUserInformationList(UserInformationList.SelectedIndex,lb)[0])
+            if (ChooseTypeOfFieldToChangeCombobox.SelectedIndex != 4)
             {
-                case "Name":
-                    {
-                        User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(0, lb)[1], false);
-                        u.Status = UserStatus.OnModeration.ToString();
-                        u.UserName = UserMailRedactTextBox.Text;
-                        _dataBase.UpdateUserStatus(u, u.Status, true);
-                        break;
-                    }
-                case "Mail":
-                    {
-                        User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(1, lb)[1], false);
-                        u.Status = UserStatus.OnModeration.ToString();
-                        u.UserMail = UserMailRedactTextBox.Text;
-                        _dataBase.UpdateUserStatus(u, u.Status, true);
-                        break;
-                    }
-                case "Age":
+                if (!string.IsNullOrEmpty(UserMailRedactTextBox.Text))
                 {
-                    User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(3, lb)[1], false);
-                    u.Status = UserStatus.OnModeration.ToString();
-                    int defage = 18;
-                    int.TryParse(UserMailRedactTextBox.Text, out defage);
-                    u.Age = defage;
-                    _dataBase.UpdateUserStatus(u, u.Status, true);
-                        break;
+                    var itemname =
+                        ChooseTypeOfFieldToChangeCombobox.Items.GetItemAt(
+                            ChooseTypeOfFieldToChangeCombobox.SelectedIndex)
+                            .ToString();
+                    var itemsubstring =
+                        itemname.Substring(itemname.IndexOf(' '), itemname.Length - itemname.IndexOf(':') - 1)
+                            .Remove(0, 1);
+                    User u = new User();
+                    switch (itemsubstring)
+                    {
+                        case "Name":
+                            {
+                                u =
+                                    _dataBase.GetUserBymailOrGuid(
+                                        GetSubstringOfGuid(UserInformationList.Items[2].ToString(), '-'), true);
+                                u.Status = UserStatus.OnModeration.ToString();
+                                u.UserName = UserMailRedactTextBox.Text;
+                                _dataBase.UpdateUserStatus(u, u.Status, true);
+                                break;
+                            }
+                        case "Mail":
+                            {
+                                u =
+                                    _dataBase.GetUserBymailOrGuid(
+                                        GetSubstringOfGuid(UserInformationList.Items[2].ToString(), '-'), true);
+                                u.Status = UserStatus.OnModeration.ToString();
+                                u.UserMail = UserMailRedactTextBox.Text;
+                                _dataBase.UpdateUserStatus(u, u.Status, true);
+                                break;
+                            }
+                        case "Age":
+                            {
+                                u =
+                                    _dataBase.GetUserBymailOrGuid(
+                                        GetSubstringOfGuid(UserInformationList.Items[2].ToString(), '-'), true);
+                                u.Status = UserStatus.OnModeration.ToString();
+                                int defage = 18;
+                                int.TryParse(UserMailRedactTextBox.Text, out defage);
+                                u.Age = defage;
+                                _dataBase.UpdateUserStatus(u, u.Status, true);
+                                break;
+                            }
+                        case "Number":
+                            {
+                                u =
+                                    _dataBase.GetUserBymailOrGuid(
+                                        GetSubstringOfGuid(UserInformationList.Items[2].ToString(), '-'), true);
+                                u.Status = UserStatus.OnModeration.ToString();
+                                u.UserNumber = UserMailRedactTextBox.Text;
+                                _dataBase.UpdateUserStatus(u, u.Status, true);
+                                break;
+                            }
+                        case "Guid":
+                            {
+                                MessageBox.Show("You can't change your guid");
+                                break;
+                            }
+                        case "Id":
+                            {
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+                    }
+                    if (!string.IsNullOrEmpty(u.UserGuid))
+                    {
+                        MessageBox.Show("Данные были успешно отредактированы!");
+                        CheckUser(u);
+                        UserMailRedactTextBox.Text = null;
+                    }
+
+                    else
+                    {
+                        MessageBox.Show("О вас не поступало никакой информации");
+                    }
                 }
-                case "Number":
+                else
                 {
-                    User u = _dataBase.GetUserBymailOrGuid(GetDataFromUserInformationList(4, lb)[1], false);
-                    u.Status = UserStatus.OnModeration.ToString();
-                    u.UserNumber = UserMailRedactTextBox.Text;
-                    _dataBase.UpdateUserStatus(u, u.Status, true);
-                        break;
+                    UserMailRedactTextBox.Background = new SolidColorBrush(Colors.Red);
+                    MessageBox.Show("Поле Пустое!");
                 }
-                case "Guid":{MessageBox.Show("You can't change your guid"); break;}
-                case "Id":{ break; }
+            }
+            else
+            {
+                MessageBox.Show("Вы не выбрали какую либо категорию для изменения , это очень важно для нас");
+            }
+        }
+
+        private void CheckUser(User u)
+        {
+            if (u.UserMail.Contains('@'))
+            {
+                Regex r = new Regex("[0-9]");
+                if (r.IsMatch(u.UserNumber) && u.UserNumber.Length == 12)
+                {
+                    _dataBase.UpdateUserStatus(u, UserStatus.Passed.ToString(), true);
+                }
+                else
+                {
+                    ErrorMessage errorwithnumber = new ErrorMessage()
+                    {
+                        MessageBody = "Проблемы с тем что у вас неправильный номер)",
+                        UserInfo = u
+                    };
+
+                    _busService.PublishMessage(errorwithnumber, "Error");
+                    _dataBase.UpdateUserStatus(u, UserStatus.Error.ToString(), true);
+                }
+            }
+            else
+            {
+                ErrorMessage errorWithDog = new ErrorMessage()
+                {
+
+                    MessageBody = "Проблемы с тем что у вас тупо нет собачки) аахахаха, заведите собачку)",
+                    UserInfo = u
+                };
+
+                _busService.PublishMessage(errorWithDog, "Error");
+                _dataBase.UpdateUserStatus(u, UserStatus.Error.ToString(), true);
             }
 
-            MessageBox.Show("Данные были успешно отредактированы!");
         }
     }
 }

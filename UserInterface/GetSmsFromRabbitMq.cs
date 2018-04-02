@@ -13,7 +13,9 @@ namespace UserInterface
     public class GetSmsFromRabbitMq
     {
         public static IConnectionFactory _connectionFactory;
+     
 
+        
         public void RunWorkerProcessForSmss(string queueName = "smss_to_send")
         {
             using (var connection = _connectionFactory.CreateConnection())
@@ -38,11 +40,13 @@ namespace UserInterface
                     var message = Encoding.UTF8.GetString(body);
 
                     var messageDeserialized = JsonConvert.DeserializeObject<ErrorMessage>(message);
-                    Console.WriteLine($" [x] Deserialized object {messageDeserialized.MessageBody}");
                     using (StreamWriter sw = new StreamWriter(MainWindow.PathToErrorLog, true))
                     {
-                        sw.WriteLine(message);
+
+                        sw.Write(JsonConvert.SerializeObject(messageDeserialized));
                     }
+                    Console.WriteLine($" [x] Deserialized object {messageDeserialized.MessageBody}");
+
                     Console.WriteLine($" [x] Received {message}");
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($" [x] Operation Completed {message}");
@@ -63,9 +67,9 @@ namespace UserInterface
         {
             _connectionFactory = new ConnectionFactory()
             {
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
+                HostName = "192.168.111.199",
+                UserName = "shag",
+                Password = "shag",
                 VirtualHost = "/"
             };
         }

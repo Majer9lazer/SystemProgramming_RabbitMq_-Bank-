@@ -110,20 +110,23 @@ namespace UserInterface.WorkWithUsers
         public void UpdateUserStatus(User u, string status, bool redactAll)
         {
             XDocument xdoc = XDocument.Load(DbFile);
-            var element = xdoc.Element("Users").Elements().Elements().FirstOrDefault(f => f.Value == u.UserGuid)
+            var element = xdoc.Element("Users")?.Elements()?.Elements()?.FirstOrDefault(f => f.Value == u.UserGuid)?
                 .Parent;
             if (!redactAll)
             {
-
-                foreach (XElement xelement in element.Elements())
+                var elements = element?.Elements();
+                if (elements != null)
                 {
-                    if (xelement.Name.LocalName == "Status")
+                    foreach (XElement xelement in elements)
                     {
-                        xelement.Value = status;
+                        if (xelement.Name.LocalName == "Status")
+                        {
+                            xelement.Value = status;
+                        }
                     }
-                }
 
-                xdoc.Save(DbFile);
+                    xdoc.Save(DbFile);
+                }
             }
             else
             {

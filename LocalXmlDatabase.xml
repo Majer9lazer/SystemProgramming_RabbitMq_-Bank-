@@ -7003,57 +7003,25 @@
   <User Id="1001">
     <Name>Egor</Name>
     <Age>19</Age>
-    <UserMail>Mail - sidorenkoegor1999</UserMail>
-    <UserNumber>dssa</UserNumber>
+    <UserMail>sidorenkoegor201240@gmail.com</UserMail>
+    <UserNumber>zsdfsfdsfs</UserNumber>
     <UserGuid>509a4e38-600e-4475-83b5-05eb46e3f2d2</UserGuid>
-    <Status>OnModeration</Status>
-  </User>
-  <User Id="1001">
-    <Name>Egor</Name>
-    <Age>19</Age>
-    <UserMail>sidorenkoegor1999@mail.ru</UserMail>
-    <UserNumber>+77051648233</UserNumber>
-    <UserGuid>3b1b562a-4fb6-4628-a1d1-ffd9249e18d0</UserGuid>
     <Status>Passed</Status>
   </User>
   <User Id="1002">
-    <Name>dsdgfsf</Name>
+    <Name>fsdfsd</Name>
     <Age>0</Age>
-    <UserMail>fsdfsd</UserMail>
-    <UserNumber>fsdfsdf</UserNumber>
-    <UserGuid>0039e4bb-13e4-46dd-8f2b-80a4340548cd</UserGuid>
+    <UserMail>fsdf</UserMail>
+    <UserNumber>sdfsd</UserNumber>
+    <UserGuid>3edaa82c-40c2-42fb-82da-a6590e2b41b4</UserGuid>
     <Status>Error</Status>
   </User>
   <User Id="1003">
-    <Name>adsasd</Name>
-    <Age>0</Age>
-    <UserMail>asdsad</UserMail>
-    <UserNumber>sada</UserNumber>
-    <UserGuid>1c22210a-1ba5-4edc-a759-3539a81648b1</UserGuid>
-    <Status>Error</Status>
-  </User>
-  <User Id="1004">
-    <Name>vxcvxc</Name>
-    <Age>0</Age>
-    <UserMail>xvxcvxcvxc</UserMail>
-    <UserNumber>vxcvxcv</UserNumber>
-    <UserGuid>6e7093c5-070b-4ca6-ac31-9e5821566606</UserGuid>
-    <Status>Error</Status>
-  </User>
-  <User Id="1005">
-    <Name>adad</Name>
-    <Age>0</Age>
-    <UserMail>asdasas</UserMail>
-    <UserNumber>adasdas</UserNumber>
-    <UserGuid>5ad869b6-500a-46c2-acc0-2c1ee67dcf8a</UserGuid>
-    <Status>Error</Status>
-  </User>
-  <User Id="1006">
-    <Name>sdfsdf</Name>
-    <Age>0</Age>
-    <UserMail>sdfsdfsdsdfsdf</UserMail>
-    <UserNumber>gdfgdfgdf</UserNumber>
-    <UserGuid>23c6c3a1-fb0b-4bac-8ca4-870f8db96fe5</UserGuid>
+    <Name>Egor</Name>
+    <Age>17</Age>
+    <UserMail>sdasdsa</UserMail>
+    <UserNumber>+456454</UserNumber>
+    <UserGuid>6632c35d-3f8c-4df2-b5e6-9375a004410d</UserGuid>
     <Status>Error</Status>
   </User>
 </Users>
